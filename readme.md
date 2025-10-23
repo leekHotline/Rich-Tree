@@ -2,6 +2,9 @@
 
 酷炫目录树显示工具 - 使用 Rich 库渲染美观的目录结构
 
+<img width="1461" height="533" alt="图片" src="https://github.com/user-attachments/assets/9180a20d-63a3-44ca-898c-6b354f88ac27" />
+<img width="1468" height="891" alt="图片" src="https://github.com/user-attachments/assets/39be2f6d-cc47-4684-ad01-107ba3d1600e" />
+
 ## ✨ 特性
 
 - 🎨 美观的树形结构显示，支持彩色输出
