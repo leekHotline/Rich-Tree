@@ -19,7 +19,12 @@
 
 ### 方法一：一键脚本安装（推荐）
 
-在项目根目录运行以下命令，自动安装到用户环境并配置全局可用：
+**克隆项目**
+```cmd
+git clone https://github.com/leekHotline/Rich-Tree.git
+```
+
+在项目根目录运行以下命令，**自动安装到用户环境**并配置全局可用：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\setup-rich-tree.ps1
