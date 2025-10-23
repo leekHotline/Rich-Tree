@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -14,6 +13,46 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 from rich import box
+
+
+def _supports_unicode() -> bool:
+    enc = (getattr(sys.stdout, "encoding", None) or "").lower()
+    return "utf" in enc
+
+
+def _symbols():
+    if _supports_unicode():
+        return {
+            "dir": "📁",
+            "py": "🐍",
+            "text": "📄",
+            "image": "🖼️",
+            "video": "🎬",
+            "audio": "🎵",
+            "archive": "📦",
+            "exec": "⚙️",
+            "data": "📋",
+            "deny": "❌",
+            "home": "🏠",
+            "tree": "🌳",
+            "scan": "📂",
+        }
+    # ASCII fallback for legacy consoles (e.g., GBK)
+    return {
+        "dir": "[DIR]",
+        "py": "[PY]",
+        "text": "[FILE]",
+        "image": "[IMG]",
+        "video": "[VID]",
+        "audio": "[AUD]",
+        "archive": "[ZIP]",
+        "exec": "[EXE]",
+        "data": "[DATA]",
+        "deny": "[X]",
+        "home": "[ROOT]",
+        "tree": "TREE",
+        "scan": "SCAN",
+    }
 
 def get_dir_size(path):
     """获取目录大小"""
@@ -44,7 +83,8 @@ def build_tree(directory, tree, max_depth=5, current_depth=0, show_size=True, sh
     try:
         paths = sorted(Path(directory).iterdir(), key=lambda x: (not x.is_dir(), x.name.lower()))
     except PermissionError:
-        tree.add("❌ [red]权限拒绝[/red]")
+        sym = _symbols()
+        tree.add(f"{sym['deny']} [red]权限拒绝[/red]")
         return
     
     dirs = [p for p in paths if p.is_dir()]
@@ -60,7 +100,8 @@ def build_tree(directory, tree, max_depth=5, current_depth=0, show_size=True, sh
         if dir_path.name.startswith('.') and not show_hidden:
             continue
         
-        icon = "📁"
+        sym = _symbols()
+        icon = sym["dir"]
         style = "bold cyan"
         
         if show_size:
@@ -79,24 +120,25 @@ def build_tree(directory, tree, max_depth=5, current_depth=0, show_size=True, sh
         
         # 根据文件类型设置图标
         suffix = file_path.suffix.lower()
+        sym = _symbols()
         if suffix in ['.py']:
-            icon = "🐍"
+            icon = sym["py"]
         elif suffix in ['.txt', '.md', '.doc', '.docx']:
-            icon = "📄"
+            icon = sym["text"]
         elif suffix in ['.jpg', '.png', '.gif', '.jpeg', '.svg']:
-            icon = "🖼️"
+            icon = sym["image"]
         elif suffix in ['.mp4', '.avi', '.mov']:
-            icon = "🎬"
+            icon = sym["video"]
         elif suffix in ['.mp3', '.wav', '.flac']:
-            icon = "🎵"
+            icon = sym["audio"]
         elif suffix in ['.zip', '.rar', '.7z', '.tar', '.gz']:
-            icon = "📦"
+            icon = sym["archive"]
         elif suffix in ['.exe', '.app']:
-            icon = "⚙️"
+            icon = sym["exec"]
         elif suffix in ['.json', '.xml', '.yaml', '.yml']:
-            icon = "📋"
+            icon = sym["data"]
         else:
-            icon = "📄"
+            icon = sym["text"]
         
         size = file_path.stat().st_size if show_size else 0
         if show_size:
@@ -121,14 +163,15 @@ def display_tree(target_path=".", max_depth=5, show_size=True, show_hidden=False
         return
     
     # 创建标题
+    sym = _symbols()
     title = Text()
-    title.append("🌳 目录结构树 🌳", style="bold magenta")
+    title.append(f"{sym['tree']} 目录结构树 {sym['tree']}", style="bold magenta")
     
     # 显示面板
     console.print(Panel(
         f"[cyan]路径:[/cyan] [yellow]{path}[/yellow]\n"
         f"[cyan]深度:[/cyan] [yellow]{max_depth}[/yellow] 层",
-        title="📂 扫描信息",
+        title=f"{sym['scan']} 扫描信息",
         border_style="blue",
         box=box.ROUNDED
     ))
@@ -137,7 +180,7 @@ def display_tree(target_path=".", max_depth=5, show_size=True, show_hidden=False
     
     # 创建根树
     tree = Tree(
-        f"🏠 [bold blue]{path.name or path}[/bold blue]",
+        f"{sym['home']} [bold blue]{path.name or path}[/bold blue]",
         guide_style="bright_blue"
     )
     
@@ -153,9 +196,9 @@ def display_tree(target_path=".", max_depth=5, show_size=True, show_hidden=False
     
     console.print()
     console.print(Panel(
-        f"[cyan]📁 目录数:[/cyan] [yellow]{total_dirs}[/yellow]\n"
-        f"[cyan]📄 文件数:[/cyan] [yellow]{total_files}[/yellow]",
-        title="📊 统计信息",
+        f"[cyan]目录数:[/cyan] [yellow]{total_dirs}[/yellow]\n"
+        f"[cyan]文件数:[/cyan] [yellow]{total_files}[/yellow]",
+        title="统计信息",
         border_style="green",
         box=box.ROUNDED
     ))
@@ -189,3 +232,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
